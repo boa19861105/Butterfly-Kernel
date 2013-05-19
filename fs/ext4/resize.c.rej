@@ -1,0 +1,41 @@
+--- fs/ext4/resize.c
++++ fs/ext4/resize.c
+@@ -200,8 +200,11 @@
+  * be a partial of a flex group.
+  *
+  * @sb: super block of fs to which the groups belongs
++ *
++ * Returns 0 on a successful allocation of the metadata blocks in the
++ * block group.
+  */
+-static void ext4_alloc_group_tables(struct super_block *sb,
++static int ext4_alloc_group_tables(struct super_block *sb,
+ 				struct ext4_new_flex_group_data *flex_gd,
+ 				int flexbg_size)
+ {
+@@ -237,7 +242,6 @@
+ 
+ 	start_blk += overhead;
+ 
+-	BUG_ON(src_group >= group_data[0].group + flex_gd->count);
+ 	/* We collect contiguous blocks as much as possible. */
+ 	src_group++;
+ 	for (; src_group <= last_group; src_group++)
+@@ -454,6 +459,9 @@
+ 		gdblocks = ext4_bg_num_gdb(sb, group);
+ 		start = ext4_group_first_block_no(sb, group);
+ 
++		if (!ext4_bg_has_super(sb, group))
++			goto handle_itb;
++
+ 		/* Copy all of the GDT blocks into the backup in this group */
+ 		for (j = 0, block = start + 1; j < gdblocks; j++, block++) {
+ 			struct buffer_head *gdb;
+@@ -496,6 +504,7 @@
+ 				goto out;
+ 		}
+ 
++handle_itb:
+ 		/* Initialize group tables of the grop @group */
+ 		if (!(bg_flags[i] & EXT4_BG_INODE_ZEROED))
+ 			goto handle_bb;

@@ -1,0 +1,16 @@
+--- fs/ext4/inode.c
++++ fs/ext4/inode.c
+@@ -2404,13 +2414,6 @@
+ 		 */
+ 		return 1;
+ 	}
+-	/*
+-	 * Even if we don't switch but are nearing capacity,
+-	 * start pushing delalloc when 1/2 of free blocks are dirty.
+-	 */
+-	if (free_blocks < 2 * dirty_blocks)
+-		writeback_inodes_sb_if_idle(sb, WB_REASON_FS_FREE_SPACE);
+-
+ 	return 0;
+ }
+ 
