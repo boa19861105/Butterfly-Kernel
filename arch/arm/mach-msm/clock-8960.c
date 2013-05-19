@@ -3271,7 +3271,9 @@ static struct clk_freq_tbl clk_tbl_gfx2d[] = {
 	F_GFX2D(160000000, pll2, 1,  5),
 	F_GFX2D(177778000, pll2, 2,  9),
 	F_GFX2D(200000000, pll2, 1,  4),
-	F_GFX2D(228571000, pll2, 2,  7),
+	F_GFX2D(266667000, pll2, 2,  7),
+	F_GFX2D(300000000, pll2, 1,  3),
+	F_GFX2D(320000000, pll2, 1,  4),
 	F_END
 };
 
@@ -3315,7 +3317,7 @@ static struct rcg_clk gfx2d0_clk = {
 		.ops = &clk_ops_rcg,
 		.flags = CLKFLAG_SKIP_HANDOFF,
 		VDD_DIG_FMAX_MAP3(LOW,  100000000, NOMINAL, 200000000,
-				  HIGH, 228571000),
+				  HIGH, 320000000),
 		CLK_INIT(gfx2d0_clk.c),
 	},
 };
@@ -3360,7 +3362,7 @@ static struct rcg_clk gfx2d1_clk = {
 		.ops = &clk_ops_rcg,
 		.flags = CLKFLAG_SKIP_HANDOFF,
 		VDD_DIG_FMAX_MAP3(LOW,  100000000, NOMINAL, 200000000,
-				  HIGH, 228571000),
+				  HIGH, 320000000),
 		CLK_INIT(gfx2d1_clk.c),
 	},
 };
@@ -3412,6 +3414,10 @@ static struct clk_freq_tbl clk_tbl_gfx3d_8064[] = {
 	F_GFX3D(266667000, pll2,  1,  3),
 	F_GFX3D(325000000, pll15, 1,  3),
 	F_GFX3D(400000000, pll2,  1,  2),
+	F_GFX3D(450000000, pll2,  1,  2),
+	F_GFX3D(500000000, pll2,  1,  2),
+	F_GFX3D(525000000, pll2,  1,  2),
+	F_GFX3D(550000000, pll2,  1,  2),
 	F_END
 };
 
@@ -3438,9 +3444,9 @@ static struct clk_freq_tbl clk_tbl_gfx3d_8930[] = {
 };
 
 static unsigned long fmax_gfx3d_8064[MAX_VDD_LEVELS] __initdata = {
-	[VDD_DIG_LOW]     = 128000000,
-	[VDD_DIG_NOMINAL] = 325000000,
-	[VDD_DIG_HIGH]    = 400000000
+	[VDD_DIG_LOW]     = 160000000,
+	[VDD_DIG_NOMINAL] = 450000000,
+	[VDD_DIG_HIGH]    = 550000000
 };
 
 static unsigned long fmax_gfx3d_8930[MAX_VDD_LEVELS] __initdata = {
@@ -3487,8 +3493,8 @@ static struct rcg_clk gfx3d_clk = {
 	.c = {
 		.dbg_name = "gfx3d_clk",
 		.ops = &clk_ops_rcg,
-		VDD_DIG_FMAX_MAP3(LOW,  128000000, NOMINAL, 300000000,
-				  HIGH, 400000000),
+		VDD_DIG_FMAX_MAP3(LOW,  160000000, NOMINAL, 450000000,
+				  HIGH, 550000000),
 		CLK_INIT(gfx3d_clk.c),
 		.depends = &gmem_axi_clk.c,
 	},
@@ -3596,7 +3602,7 @@ static struct clk_freq_tbl clk_tbl_ijpeg[] = {
 };
 
 static unsigned long fmax_ijpeg_8064[MAX_VDD_LEVELS] __initdata = {
-	[VDD_DIG_LOW]     = 128000000,
+	[VDD_DIG_LOW]     = 153600000,
 	[VDD_DIG_NOMINAL] = 266667000,
 	[VDD_DIG_HIGH]    = 320000000
 };
@@ -3624,7 +3630,7 @@ static struct rcg_clk ijpeg_clk = {
 	.c = {
 		.dbg_name = "ijpeg_clk",
 		.ops = &clk_ops_rcg,
-		VDD_DIG_FMAX_MAP3(LOW, 110000000, NOMINAL, 266667000,
+		VDD_DIG_FMAX_MAP3(LOW, 153600000, NOMINAL, 266667000,
 				  HIGH, 320000000),
 		CLK_INIT(ijpeg_clk.c),
 		.depends = &ijpeg_axi_clk.c,
@@ -4202,7 +4208,7 @@ static struct rcg_clk vpe_clk = {
 	.c = {
 		.dbg_name = "vpe_clk",
 		.ops = &clk_ops_rcg,
-		VDD_DIG_FMAX_MAP2(LOW, 76800000, NOMINAL, 200000000),
+		VDD_DIG_FMAX_MAP2(LOW, 76800000, NOMINAL, 160000000),
 		CLK_INIT(vpe_clk.c),
 		.depends = &vpe_axi_clk.c,
 	},
