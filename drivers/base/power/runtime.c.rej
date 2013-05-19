@@ -1,0 +1,19 @@
+--- drivers/base/power/runtime.c
++++ drivers/base/power/runtime.c
+@@ -652,6 +652,7 @@
+ 		    || dev->parent->power.runtime_status == RPM_ACTIVE) {
+ 			atomic_inc(&dev->parent->power.child_count);
+ 			spin_unlock(&dev->parent->power.lock);
++			retval = 1;
+ 			goto no_callback;	/* Assume success. */
+ 		}
+ 		spin_unlock(&dev->parent->power.lock);
+@@ -735,7 +736,7 @@
+ 	}
+ 	wake_up_all(&dev->power.wait_queue);
+ 
+-	if (!retval)
++	if (retval >= 0)
+ 		rpm_idle(dev, RPM_ASYNC);
+ 
+  out:

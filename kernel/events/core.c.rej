@@ -1,0 +1,54 @@
+--- kernel/events/core.c
++++ kernel/events/core.c
+@@ -2929,12 +2929,12 @@
+ /*
+  * Called when the last reference to the file is gone.
+  */
+-static int perf_release(struct inode *inode, struct file *file)
++static void put_event(struct perf_event *event)
+ {
+-	struct perf_event *event = file->private_data;
+ 	struct task_struct *owner;
+ 
+-	file->private_data = NULL;
++	if (!atomic_long_dec_and_test(&event->refcount))
++		return;
+ 
+ 	rcu_read_lock();
+ 	owner = ACCESS_ONCE(event->owner);
+@@ -6516,7 +6523,7 @@
+ 	 * Release the parent event, if this was the last
+ 	 * reference to it.
+ 	 */
+-	fput(parent_event->filp);
++	put_event(parent_event);
+ }
+ 
+ static void
+@@ -6592,9 +6599,8 @@
+ 	 *
+ 	 *   __perf_event_exit_task()
+ 	 *     sync_child_event()
+-	 *       fput(parent_event->filp)
+-	 *         perf_release()
+-	 *           mutex_lock(&ctx->mutex)
++	 *       put_event()
++	 *         mutex_lock(&ctx->mutex)
+ 	 *
+ 	 * But since its the parent context it won't be the same instance.
+ 	 */
+@@ -6789,14 +6801,6 @@
+ 	raw_spin_unlock_irqrestore(&child_ctx->lock, flags);
+ 
+ 	/*
+-	 * Get a reference to the parent filp - we will fput it
+-	 * when the child event exits. This is safe to do because
+-	 * we are in the parent and we know that the filp still
+-	 * exists and has a nonzero count:
+-	 */
+-	atomic_long_inc(&parent_event->filp->f_count);
+-
+-	/*
+ 	 * Link this into the parent event's child list
+ 	 */
+ 	WARN_ON_ONCE(parent_event->ctx->parent_ctx);

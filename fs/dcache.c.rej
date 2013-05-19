@@ -1,0 +1,11 @@
+--- fs/dcache.c
++++ fs/dcache.c
+@@ -373,7 +373,7 @@
+ 	 * Inform try_to_ascend() that we are no longer attached to the
+ 	 * dentry tree
+ 	 */
+-	dentry->d_flags |= DCACHE_DISCONNECTED;
++	dentry->d_flags |= DCACHE_DENTRY_KILLED;
+ 	if (parent)
+ 		spin_unlock(&parent->d_lock);
+ 	dentry_iput(dentry);

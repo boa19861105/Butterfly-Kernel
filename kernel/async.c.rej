@@ -1,0 +1,11 @@
+--- kernel/async.c
++++ kernel/async.c
+@@ -263,7 +268,7 @@
+ /**
+  * async_synchronize_cookie_domain - synchronize asynchronous function calls within a certain domain with cookie checkpointing
+  * @cookie: async_cookie_t to use as checkpoint
+- * @running: running list to synchronize on
++ * @running: running list to synchronize on, NULL indicates all lists
+  *
+  * This function waits until all asynchronous function calls for the
+  * synchronization domain specified by the running list @list submitted

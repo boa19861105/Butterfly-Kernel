@@ -1043,7 +1043,6 @@ static void l2cap_conn_ready(struct l2cap_conn *conn)
 				if (pending_sec > sec_level)
 					sec_level = pending_sec;
 
-				if (smp_conn_security(conn, sec_level))
 					l2cap_chan_ready(sk);
 
 				hci_conn_put(conn->hcon);
@@ -1059,7 +1058,7 @@ static void l2cap_conn_ready(struct l2cap_conn *conn)
 			bh_unlock_sock(sk);
 		}
 	} else if (conn->hcon->type == LE_LINK) {
-		smp_conn_security(conn, BT_SECURITY_HIGH);
+
 	}
 
 	read_unlock(&l->lock);
@@ -7109,7 +7108,7 @@ static void l2cap_recv_frame(struct l2cap_conn *conn, struct sk_buff *skb)
 		break;
 
 	case L2CAP_CID_SMP:
-		if (smp_sig_channel(conn, skb))
+
 			l2cap_conn_del(conn->hcon, EACCES, 0);
 		break;
 
@@ -7323,7 +7322,7 @@ static int l2cap_security_cfm(struct hci_conn *hcon, u8 status, u8 encrypt)
 
 	if (smp) {
 		del_timer(&hcon->smp_timer);
-		smp_link_encrypt_cmplt(conn, status, encrypt);
+
 	}
 
 	return 0;

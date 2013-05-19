@@ -1,0 +1,11 @@
+--- kernel/sched/core.c
++++ kernel/sched/core.c
+@@ -1098,7 +1098,7 @@
+ 	 * a task's CPU. ->pi_lock for waking tasks, rq->lock for runnable tasks.
+ 	 *
+ 	 * sched_move_task() holds both and thus holding either pins the cgroup,
+-	 * see set_task_rq().
++	 * see task_group().
+ 	 *
+ 	 * Furthermore, all task_rq users should acquire both locks, see
+ 	 * task_rq_lock().

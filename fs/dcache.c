@@ -705,7 +705,7 @@ static struct dentry *try_to_ascend(struct dentry *old, int locked, unsigned seq
 	spin_lock(&new->d_lock);
 
 	if (new != old->d_parent ||
-		 (old->d_flags & DCACHE_DISCONNECTED) ||
+		 (old->d_flags & DCACHE_DENTRY_KILLED) ||
 		 (!locked && read_seqretry(&rename_lock, seq))) {
 		spin_unlock(&new->d_lock);
 		new = NULL;

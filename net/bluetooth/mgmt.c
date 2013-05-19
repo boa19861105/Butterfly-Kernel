@@ -1544,9 +1544,7 @@ static void pairing_security_complete_cb(struct hci_conn *conn, u8 status)
 	}
 
 	if (conn->type == LE_LINK)
-		smp_link_encrypt_cmplt(conn->l2cap_data, status,
-				status ? 0 : 1);
-	else
+
 		pairing_complete(cmd, status);
 }
 

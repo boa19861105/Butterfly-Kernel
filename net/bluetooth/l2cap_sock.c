@@ -713,8 +713,6 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname, ch
 				err = -EINVAL;
 				break;
 			}
-
-			if (smp_conn_security(conn, sec.level))
 				break;
 
 			err = 0;
@@ -1043,7 +1041,6 @@ void __l2cap_sock_close(struct sock *sk, int reason)
 	case BT_CONNECT:
 	case BT_DISCONN:
 		l2cap_chan_del(sk, reason);
-		break;
 
 	default:
 		sock_set_flag(sk, SOCK_ZAPPED);
