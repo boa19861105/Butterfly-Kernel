@@ -1,0 +1,26 @@
+--- fs/sysfs/dir.c
++++ fs/sysfs/dir.c
+@@ -457,20 +457,18 @@
+ /**
+  *	sysfs_pathname - return full path to sysfs dirent
+  *	@sd: sysfs_dirent whose path we want
+- *	@path: caller allocated buffer
++ *	@path: caller allocated buffer of size PATH_MAX
+  *
+  *	Gives the name "/" to the sysfs_root entry; any path returned
+  *	is relative to wherever sysfs is mounted.
+- *
+- *	XXX: does no error checking on @path size
+  */
+ static char *sysfs_pathname(struct sysfs_dirent *sd, char *path)
+ {
+ 	if (sd->s_parent) {
+ 		sysfs_pathname(sd->s_parent, path);
+-		strcat(path, "/");
++		strlcat(path, "/", PATH_MAX);
+ 	}
+-	strcat(path, sd->s_name);
++	strlcat(path, sd->s_name, PATH_MAX);
+ 	return path;
+ }
+ 
