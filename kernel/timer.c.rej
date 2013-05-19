@@ -1,0 +1,19 @@
+--- kernel/timer.c
++++ kernel/timer.c
+@@ -357,11 +358,12 @@
+ 		vec = base->tv1.vec + (base->timer_jiffies & TVR_MASK);
+ 	} else {
+ 		int i;
+-		/* If the timeout is larger than 0xffffffff on 64-bit
+-		 * architectures then we use the maximum timeout:
++		/* If the timeout is larger than MAX_TVAL (on 64-bit
++		 * architectures or with CONFIG_BASE_SMALL=1) then we
++		 * use the maximum timeout.
+ 		 */
+-		if (idx > 0xffffffffUL) {
+-			idx = 0xffffffffUL;
++		if (idx > MAX_TVAL) {
++			idx = MAX_TVAL;
+ 			expires = idx + base->timer_jiffies;
+ 		}
+ 		i = (expires >> (TVR_BITS + 3 * TVN_BITS)) & TVN_MASK;

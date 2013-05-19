@@ -1,0 +1,12 @@
+--- net/netfilter/xt_hashlimit.c
++++ net/netfilter/xt_hashlimit.c
+@@ -389,8 +389,7 @@
+ #define CREDITS_PER_JIFFY POW2_BELOW32(MAX_CPJ)
+ 
+ /* Precision saver. */
+-static inline u_int32_t
+-user2credits(u_int32_t user)
++static u32 user2credits(u32 user)
+ {
+ 	/* If multiplying would overflow... */
+ 	if (user > 0xFFFFFFFF / (HZ*CREDITS_PER_JIFFY))
