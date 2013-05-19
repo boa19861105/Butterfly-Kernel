@@ -1,0 +1,10 @@
+--- drivers/scsi/scsi_lib.c
++++ drivers/scsi/scsi_lib.c
+@@ -760,7 +760,6 @@
+ 	}
+ 
+ 	if (req->cmd_type == REQ_TYPE_BLOCK_PC) { /* SG_IO ioctl from block level */
+-		req->errors = result;
+ 		if (result) {
+ 			if (sense_valid && req->sense) {
+ 				/*
