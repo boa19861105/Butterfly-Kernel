@@ -1,0 +1,45 @@
+--- drivers/md/dm.c
++++ drivers/md/dm.c
+@@ -1570,15 +1574,6 @@
+ 	int r, requeued = 0;
+ 	struct dm_rq_target_io *tio = clone->end_io_data;
+ 
+-	/*
+-	 * Hold the md reference here for the in-flight I/O.
+-	 * We can't rely on the reference count by device opener,
+-	 * because the device may be closed during the request completion
+-	 * when all bios are completed.
+-	 * See the comment in rq_completed() too.
+-	 */
+-	dm_get(md);
+-
+ 	tio->ti = ti;
+ 	r = ti->type->map_rq(ti, clone, &tio->info);
+ 	switch (r) {
+@@ -1610,6 +1605,26 @@
+ 	return requeued;
+ }
+ 
++static struct request *dm_start_request(struct mapped_device *md, struct request *orig)
++{
++	struct request *clone;
++
++	blk_start_request(orig);
++	clone = orig->special;
++	atomic_inc(&md->pending[rq_data_dir(clone)]);
++
++	/*
++	 * Hold the md reference here for the in-flight I/O.
++	 * We can't rely on the reference count by device opener,
++	 * because the device may be closed during the request completion
++	 * when all bios are completed.
++	 * See the comment in rq_completed() too.
++	 */
++	dm_get(md);
++
++	return clone;
++}
++
+ /*
+  * q->request_fn for request-based dm.
+  * Called with the queue lock held.
