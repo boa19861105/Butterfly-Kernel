@@ -1,12 +1,25 @@
 --- drivers/usb/class/cdc-acm.c
 +++ drivers/usb/class/cdc-acm.c
-@@ -1551,6 +1551,9 @@
- 					   Maybe we should define a new
- 					   quirk for this. */
- 	},
-+	{ USB_DEVICE(0x0572, 0x1340), /* Conexant CX93010-2x UCMxx */
-+	.driver_info = NO_UNION_NORMAL,
-+	},
- 	{ USB_DEVICE(0x1bbb, 0x0003), /* Alcatel OT-I650 */
- 	.driver_info = NO_UNION_NORMAL, /* reports zero length descriptor */
- 	},
+@@ -831,7 +827,21 @@
+ 	newline.bParityType = termios->c_cflag & PARENB ?
+ 				(termios->c_cflag & PARODD ? 1 : 2) +
+ 				(termios->c_cflag & CMSPAR ? 2 : 0) : 0;
+-	newline.bDataBits = acm_tty_size[(termios->c_cflag & CSIZE) >> 4];
++	switch (termios->c_cflag & CSIZE) {
++	case CS5:
++		newline.bDataBits = 5;
++		break;
++	case CS6:
++		newline.bDataBits = 6;
++		break;
++	case CS7:
++		newline.bDataBits = 7;
++		break;
++	case CS8:
++	default:
++		newline.bDataBits = 8;
++		break;
++	}
+ 	/* FIXME: Needs to clear unsupported bits in the termios */
+ 	acm->clocal = ((termios->c_cflag & CLOCAL) != 0);
+ 

@@ -1,29 +1,35 @@
 --- net/netlink/af_netlink.c
 +++ net/netlink/af_netlink.c
-@@ -1329,7 +1329,7 @@
- 	if (NULL == siocb->scm)
- 		siocb->scm = &scm;
+@@ -1768,19 +1772,28 @@
+ 		return -ECONNREFUSED;
+ 	}
+ 	nlk = nlk_sk(sk);
+-	/* A dump is in progress... */
++
+ 	mutex_lock(nlk->cb_mutex);
++	/* A dump is in progress... */
+ 	if (nlk->cb) {
+ 		mutex_unlock(nlk->cb_mutex);
+ 		netlink_destroy_callback(cb);
+-		sock_put(sk);
+-		return -EBUSY;
++		ret = -EBUSY;
++		goto out;
+ 	}
++	/* add reference of module which cb->dump belongs to */
++	if (!try_module_get(cb->module)) {
++		mutex_unlock(nlk->cb_mutex);
++		netlink_destroy_callback(cb);
++		ret = -EPROTONOSUPPORT;
++		goto out;
++	}
++
+ 	nlk->cb = cb;
+ 	mutex_unlock(nlk->cb_mutex);
  
--	err = scm_send(sock, msg, siocb->scm);
-+	err = scm_send(sock, msg, siocb->scm, true);
- 	if (err < 0)
- 		return err;
+ 	ret = netlink_dump(sk);
+-
++out:
+ 	sock_put(sk);
  
-@@ -1340,7 +1340,8 @@
- 		dst_pid = addr->nl_pid;
- 		dst_group = ffs(addr->nl_groups);
- 		err =  -EPERM;
--		if (dst_group && !netlink_capable(sock, NL_NONROOT_SEND))
-+		if ((dst_group || dst_pid) &&
-+		    !netlink_capable(sock, NL_NONROOT_SEND))
- 			goto out;
- 	} else {
- 		dst_pid = nlk->dst_pid;
-@@ -2115,6 +2116,7 @@
- 	rcu_assign_pointer(nl_table[NETLINK_USERSOCK].listeners, listeners);
- 	nl_table[NETLINK_USERSOCK].module = THIS_MODULE;
- 	nl_table[NETLINK_USERSOCK].registered = 1;
-+	nl_table[NETLINK_USERSOCK].nl_nonroot = NL_NONROOT_SEND;
- 
- 	netlink_table_ungrab();
- }
+ 	if (ret)
